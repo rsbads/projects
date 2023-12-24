@@ -1,4 +1,5 @@
 #include <stdio.h>
+//#include <windows.h>
 
 enum Prioridade { BAIXA, MEDIA, ALTA };
 
@@ -62,8 +63,7 @@ const char *prioridade_string(enum Prioridade prioridade) {
   case ALTA:
     return "Alta";
   default:
-    printf("Numero invalido. Projeto colocado com prioridade Baixa.");
-    return "Baixa";
+    return "Desconhecida";
   }
 }
 
@@ -124,6 +124,83 @@ void listarProjetos(Projeto projetos[], int contadorProjetos) {
   }
 }
 
+void modificarProjeto (Projeto projetos[], int contadorProjetos){
+  int opcao, escolha;
+  if (contadorProjetos < 0 ){
+    printf("Nenhum projeto foi adicionado.");
+    return;
+  }
+
+  printf("Escolha o projeto a ser modificado (1 a %d): ", contadorProjetos);
+  scanf("%d", &opcao);
+
+  if (opcao < 1  || opcao > contadorProjetos){
+    printf("Numero invalido.");
+    return;
+  }
+
+  Projeto* mudancaProjeto = &projetos[opcao - 1];
+
+  printf("\nO que deseja modificar?\n");
+  printf("1 - Nome\n");
+  printf("2 - Prioridade\n");
+  printf("3 - Status\n");
+  printf("4 - Responsavel\n");
+  getchar();
+  scanf("%d", &escolha);
+
+  switch(escolha){
+    case 1:
+    printf("\nNovo nome: \n");
+    getchar();
+    scanf("%49s", mudancaProjeto->nome_projeto);
+    break;
+    
+    case 2:
+    mudancaProjeto->prioridade = escolherPrioridade();
+    break;
+
+    case 3:
+    mudancaProjeto->status = escolherStatus();
+    break;
+
+    case 4:
+    printf("Novo responsavel: ");
+    getchar();
+    scanf("%49s", mudancaProjeto->responsavel);
+    break;
+  }
+
+  printf("\nProjeto modificado com sucesso!\n");
+
+}
+
+void excluirProjeto(Projeto projetos[], int* contadorProjetos){
+  int opcao;
+
+  if(*contadorProjetos < 0 ){
+    printf("\nNenhum projeto a ser excluido.\n");
+    return;
+  }
+
+  printf("\nEscolha um projeto a ser excluido (1 a %d): \n", *contadorProjetos);
+  scanf("%d", &opcao);
+
+  if (opcao < 1 || opcao > *contadorProjetos){
+    printf("Numero invalido.");
+    return;
+  }
+
+  for(int i = opcao - 1; i < *contadorProjetos; i++){
+    projetos[i] = projetos[i+1];
+  }
+  
+  (*contadorProjetos)--;
+
+  printf("\nProjeto excluido com sucesso!\n");
+
+}
+
 int main() {
   int opcao;
   Projeto projetos[100];
@@ -145,11 +222,11 @@ int main() {
       break;
 
     case 3:
-      // modificar projeto.
+      modificarProjeto(projetos, contadorProjetos);
       break;
 
     case 4:
-      // excluir projeto.
+      excluirProjeto(projetos, &contadorProjetos);
       break;
 
     case 0:
@@ -167,4 +244,5 @@ int main() {
   } while (opcao != 0);
 
   return 0;
+  
 }
