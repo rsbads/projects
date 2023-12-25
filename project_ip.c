@@ -1,5 +1,8 @@
 #include <stdio.h>
 //#include <windows.h>
+#include <stdlib.h>
+
+#define NOME_ARQUIVO "Projetos.txt"
 
 enum Prioridade { BAIXA, MEDIA, ALTA };
 
@@ -88,6 +91,9 @@ void exibirMenu() {
   printf("\t2 - Exibir projetos\n");
   printf("\t3 - Modificar projeto\n");
   printf("\t4 - Excluir projeto\n");
+  printf("\t5 - Criar arquivo Projeto.txt\n");
+  printf("\t6 - Escrever no arquivo\n");
+  printf("\t7 - Ler do arquivo\n");
   printf("\t0 - Sair do programa\n");
   printf("\n=========================================\n");
   printf("\nEscolha uma das opcoes: ");
@@ -201,10 +207,67 @@ void excluirProjeto(Projeto projetos[], int* contadorProjetos){
 
 }
 
+void criarArquivoProjeto(){
+  FILE* arquivo = fopen(NOME_ARQUIVO, "w");
+
+  if(arquivo == NULL){
+    printf("Erro ao criar arquivo.\n");
+    return;
+  }
+
+  fclose(arquivo);
+
+}
+
+void escreverArquivo(Projeto projetos[], int contadorProjetos) {
+  FILE* arquivo = fopen(NOME_ARQUIVO, "w");
+
+  if(arquivo == NULL){
+    printf("Erro ao abrir arquivo para escrever.");
+    return;
+  }
+  if (arquivo){
+    fprintf(arquivo, "%d", contadorProjetos);
+    for(int i = 0 ; i < contadorProjetos; i++){
+
+    fprintf(arquivo, "%s\n%d\n%d\n%s\n", projetos[i].nome_projeto, projetos[i].prioridade, projetos[i].status, projetos[i].responsavel);
+
+    }
+  }
+
+  fclose(arquivo);
+
+}
+
+int lerArquivo(Projeto projetos[], char nomeArquivo[]){
+  FILE* arquivo = fopen(nomeArquivo, "r");
+  int quantidadeProjetos = 0;
+  Projeto novoProjeto;
+
+  if (arquivo) {
+    fscanf(arquivo, "%d\n", &quantidadeProjetos);
+
+    for (int i = 0; i < quantidadeProjetos; i++) {
+      fscanf(arquivo, "%49[^\n]\n%d\n%d\n%49[^\n]\n", novoProjeto.nome_projeto, &novoProjeto.prioridade, &novoProjeto.status, novoProjeto.responsavel);
+      projetos[i] = novoProjeto;
+
+    }
+
+    fclose(arquivo);
+    printf("\n\tLista de projetos carregada do arquivo.\n");
+  } else {
+    printf("\n\tNão foi possível abrir o arquivo.\n");
+  }
+
+  return quantidadeProjetos;
+
+}
+
 int main() {
   int opcao;
   Projeto projetos[100];
   int contadorProjetos = 0;
+  char nomeArquivo[] = "Projetos.txt";
 
   do {
     exibirMenu();
@@ -227,6 +290,20 @@ int main() {
 
     case 4:
       excluirProjeto(projetos, &contadorProjetos);
+      break;
+
+    case 5:
+      criarArquivoProjeto();
+      printf("Arquivo criado com sucesso!");
+      break;
+
+    case 6:
+      escreverArquivo(projetos, contadorProjetos);
+      printf("Projetos escritos no arquivo!");
+      break;
+
+    case 7:
+      contadorProjetos = lerArquivo(projetos, nomeArquivo);
       break;
 
     case 0:
