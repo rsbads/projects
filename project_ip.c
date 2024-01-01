@@ -5,17 +5,9 @@
 #define NOME_ARQUIVO "Projetos.txt"
 
 enum Prioridade { BAIXA, MEDIA, ALTA };
-
 enum Status { PENDENTE, EM_ANDAMENTO, CONCLUIDO };
 
-typedef struct {
-  char nome_projeto[50];
-  enum Prioridade prioridade;
-  enum Status status;
-  char responsavel[50];
-} Projeto;
-
-int escolherPrioridade() {
+enum Prioridade escolherPrioridade() {
   int opcao;
   printf("\nEscolha a prioridade:\n");
   printf("1 - Baixa\n");
@@ -66,7 +58,8 @@ const char *prioridade_string(enum Prioridade prioridade) {
   case ALTA:
     return "Alta";
   default:
-    return "Desconhecida";
+    printf("Numero invalido. Projeto colocado com prioridade Baixa.");
+    return "Pendente";
   }
 }
 
@@ -83,6 +76,14 @@ const char *status_string(enum Status status) {
     return "Pendente";
   }
 }
+
+typedef struct {
+  char nome_projeto[50];
+  enum Prioridade prioridade;
+  enum Status status;
+  char responsavel[50];
+} Projeto;
+
 
 void exibirMenu() {
   printf("\nGerenciador de projetos simples!\n");
@@ -226,16 +227,16 @@ void escreverArquivo(Projeto projetos[], int contadorProjetos) {
     printf("Erro ao abrir arquivo para escrever.");
     return;
   }
-  if (arquivo){
+  
     fprintf(arquivo, "%d", contadorProjetos);
+    
     for(int i = 0 ; i < contadorProjetos; i++){
-
     fprintf(arquivo, "%s\n%d\n%d\n%s\n", projetos[i].nome_projeto, projetos[i].prioridade, projetos[i].status, projetos[i].responsavel);
-
     }
-  }
 
   fclose(arquivo);
+  
+  printf("Projetos escritos no arquivo!\n");
 
 }
 
@@ -248,7 +249,7 @@ int lerArquivo(Projeto projetos[], char nomeArquivo[]){
     fscanf(arquivo, "%d\n", &quantidadeProjetos);
 
     for (int i = 0; i < quantidadeProjetos; i++) {
-      fscanf(arquivo, "%49[^\n]\n%d\n%d\n%49[^\n]\n", novoProjeto.nome_projeto, &novoProjeto.prioridade, &novoProjeto.status, novoProjeto.responsavel);
+      fscanf(arquivo, "%49[^\n]\n%u\n%u\n%49[^\n]\n", novoProjeto.nome_projeto, &novoProjeto.prioridade, &novoProjeto.status, novoProjeto.responsavel);
       projetos[i] = novoProjeto;
 
     }
